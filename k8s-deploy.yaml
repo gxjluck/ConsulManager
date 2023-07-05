@@ -21,23 +21,23 @@ spec:
             - sh
             - '-c'
             - >-
-              for i in $(seq 1 60); do nc -z -w3 x.x.x.x 8500 && exit 0 ||
+              for i in $(seq 1 60); do nc -z -w3 consul-consul-server.consul.svc.cluster.local 8500 && exit 0 ||
               sleep 5; done; exit 1
           imagePullPolicy: IfNotPresent
       containers:
         - name: flask-consul
-          image: 'swr.cn-south-1.myhuaweicloud.com/starsl.cn/flask-consul:latest'
+          image: 'gxjluck/flask-consul:v0.13.0'
           ports:
             - name: http-2026
               containerPort: 2026
               protocol: TCP
           env:
             - name: admin_passwd
-              value: 'xxxxxxxx'
+              value: 'consul@123'
             - name: consul_token
-              value: xxxx-xxxx-xxxx-xxxx
+              value: 1136bbf6-72f7-b045-582a-87c55c6612d3
             - name: consul_url
-              value: 'http://x.x.x.x:8500/v1'
+              value: 'http://consul-consul-server.consul.svc.cluster.local:8500/v1'
             - name: log_level
               value: INFO
             - name: TZ
@@ -79,7 +79,7 @@ spec:
     spec:
       containers:
         - name: nginx-consul
-          image: 'swr.cn-south-1.myhuaweicloud.com/starsl.cn/nginx-consul:latest'
+          image: 'gxjluck/nginx-consul:v0.13.0'
           ports:
             - name: http-1026
               containerPort: 1026
@@ -102,7 +102,23 @@ spec:
       protocol: TCP
       port: 1026
       targetPort: 1026
-      nodePort: 31026
   selector:
     app: nginx-consul
-  type: NodePort
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: consul
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: consul-manager.devops.aldicn.local
+    http:
+      paths:
+      - backend:
+          service:
+            name: consulmanager
+            port:
+              number: 1026
+        path: /
+        pathType: Prefix

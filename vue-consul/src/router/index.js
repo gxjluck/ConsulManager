@@ -220,7 +220,188 @@ export const constantRoutes = [
             meta: { title: 'Grafana 看板', icon: 'el-icon-data-line' }
           }
         ]
+      },
+      {
+        path: 'kafka',
+        name: 'KAFKA',
+        component: () => import('@/views/kafka/index'),
+        meta: { title: 'KAFKA管理', icon: 'el-icon-guide' },
+        children: [
+          {
+            path: 'self',
+            name: '自建KAFKA管理',
+            component: () => import('@/views/kafka/self'),
+            meta: { title: '自建KAFKA管理', icon: 'el-icon-s-platform' }
+          },
+          {
+            path: 'pconfig',
+            name: 'kafka-pconfig',
+            component: () => import('@/views/kafka/pconfig'),
+            meta: { title: 'Prometheus 配置', icon: 'el-icon-set-up' }
+          }
+        ]
+      },
+      {
+        path: 'zookeeper',
+        name: 'ZooKeeper',
+        component: () => import('@/views/zookeeper/index'),
+        meta: { title: 'ZooKeeper管理', icon: 'el-icon-guide' },
+        children: [
+          {
+            path: 'self',
+            name: '自建ZooKeeper管理',
+            component: () => import('@/views/zookeeper/self'),
+            meta: { title: '自建ZooKeeper管理', icon: 'el-icon-s-platform' }
+          },
+          {
+            path: 'pconfig',
+            name: 'zookeeper-pconfig',
+            component: () => import('@/views/zookeeper/pconfig'),
+            meta: { title: 'Prometheus 配置', icon: 'el-icon-set-up' }
+          }
+        ]
+      },
+      {
+        path: 'mongodB',
+        name: 'MongoDB',
+        component: () => import('@/views/mongodb/index'),
+        meta: { title: 'MongoDB管理', icon: 'el-icon-guide' },
+        children: [
+          {
+            path: 'self',
+            name: '自建MongoDB管理',
+            component: () => import('@/views/mongodb/self'),
+            meta: { title: '自建MongoDB管理', icon: 'el-icon-s-platform' }
+          },
+          {
+            path: 'pconfig',
+            name: 'mongodb-pconfig',
+            component: () => import('@/views/mongodb/pconfig'),
+            meta: { title: 'Prometheus 配置', icon: 'el-icon-set-up' }
+          }
+        ]
+      },
+      {
+        path: 'rabbitmq',
+        name: 'RabbitMQ',
+        component: () => import('@/views/rabbitmq/index'),
+        meta: { title: 'RabbitMQ管理', icon: 'el-icon-guide' },
+        children: [
+          {
+            path: 'self',
+            name: '自建RabbitMQ管理',
+            component: () => import('@/views/rabbitmq/self'),
+            meta: { title: '自建RabbitMQ管理', icon: 'el-icon-s-platform' }
+          },
+          {
+            path: 'pconfig',
+            name: 'rabbitmq-pconfig',
+            component: () => import('@/views/rabbitmq/pconfig'),
+            meta: { title: 'Prometheus 配置', icon: 'el-icon-set-up' }
+          }
+        ]
+      },
+      {
+        path: 'elasticsearch',
+        name: 'elasticsearch',
+        component: () => import('@/views/elasticsearch/index'),
+        meta: { title: 'ES管理', icon: 'el-icon-guide' },
+        children: [
+          {
+            path: 'self',
+            name: '自建ES管理',
+            component: () => import('@/views/elasticsearch/self'),
+            meta: { title: '自建ES管理', icon: 'el-icon-s-platform' }
+          },
+          {
+            path: 'pconfig',
+            name: 'elasticsearch-pconfig',
+            component: () => import('@/views/elasticsearch/pconfig'),
+            meta: { title: 'Prometheus 配置', icon: 'el-icon-set-up' }
+          }
+        ]
+      },
+      {
+        path: 'nginx',
+        name: 'Nginx',
+        component: () => import('@/views/nginx/index'),
+        meta: { title: 'Nginx管理', icon: 'el-icon-guide' },
+        children: [
+          {
+            path: 'self',
+            name: '自建Nginx管理',
+            component: () => import('@/views/nginx/self'),
+            meta: { title: '自建Nginx管理', icon: 'el-icon-s-platform' }
+          },
+          {
+            path: 'pconfig',
+            name: 'nginx-pconfig',
+            component: () => import('@/views/nginx/pconfig'),
+            meta: { title: 'Prometheus 配置', icon: 'el-icon-set-up' }
+          }
+        ]
+      },
+      {
+        path: 'varnish',
+        name: 'Varnish',
+        component: () => import('@/views/varnish/index'),
+        meta: { title: 'Varnish管理', icon: 'el-icon-guide' },
+        children: [
+          {
+            path: 'self',
+            name: '自建Varnish管理',
+            component: () => import('@/views/varnish/self'),
+            meta: { title: '自建Varnish管理', icon: 'el-icon-s-platform' }
+          },
+          {
+            path: 'pconfig',
+            name: 'varnish-pconfig',
+            component: () => import('@/views/varnish/pconfig'),
+            meta: { title: 'Prometheus 配置', icon: 'el-icon-set-up' }
+          }
+        ]
+      },
+      {
+        path: 'flink',
+        name: 'Flink',
+        component: () => import('@/views/flink/index'),
+        meta: { title: 'Flink管理', icon: 'el-icon-guide' },
+        children: [
+          {
+            path: 'self',
+            name: '自建Flink管理',
+            component: () => import('@/views/flink/self'),
+            meta: { title: '自建Flink管理', icon: 'el-icon-s-platform' }
+          },
+          {
+            path: 'pconfig',
+            name: 'flink-pconfig',
+            component: () => import('@/views/flink/pconfig'),
+            meta: { title: 'Prometheus 配置', icon: 'el-icon-set-up' }
+          }
+        ]
+      },
+      {
+        path: 'memcached',
+        name: 'MemCached',
+        component: () => import('@/views/memcached/index'),
+        meta: { title: 'MemCached管理', icon: 'el-icon-guide' },
+        children: [
+          {
+            path: 'self',
+            name: '自建MemCached管理',
+            component: () => import('@/views/memcached/self'),
+            meta: { title: '自建MemCached管理', icon: 'el-icon-s-platform' }
+          },
+          {
+            path: 'pconfig',
+            name: 'memcached-pconfig',
+            component: () => import('@/views/memcached/pconfig'),
+            meta: { title: 'Prometheus 配置', icon: 'el-icon-set-up' }
+          }
+        ]
       }
+
     ]
   },
   {

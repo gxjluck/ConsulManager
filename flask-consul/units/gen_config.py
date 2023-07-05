@@ -553,3 +553,587 @@ groups:
       description: "{{ $labels.job }}：异常\\n> {{ $labels.group }}-{{ $labels.name }}-{{ $labels.instance }}"
 """
     return {"code": 20000, "rules": rules}
+
+def kafka_config(region_list,cm_exporter,services_list,exporter):
+    region_str = '\n      - '.join([i.replace('/kafka','') for i in region_list])
+    consul_server = consul_url.split("/")[2]
+    exporter_config = f"""
+  - job_name: 'ConsulManager-KAFKA'
+    scrape_interval: 30s
+    scrape_timeout: 15s
+    static_configs:
+    - targets:
+      - {region_str}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __metrics_path__
+        regex: (.*)
+        replacement: /api/cloud_kafka_metrics/${{1}}
+      - target_label: __address__
+        replacement: {cm_exporter}
+"""
+    configs = f"""
+  - job_name: kafka_exporter
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: /scrape
+    consul_sd_configs:
+      - server: '{consul_server}'
+        token: '{consul_token}'
+        refresh_interval: 30s
+        services: {services_list}
+    relabel_configs:
+      - source_labels: [__meta_consul_tags]
+        regex: .*OFF.*
+        action: drop
+      - source_labels: ['__meta_consul_service']
+        target_label: cservice
+      - source_labels: ['__meta_consul_service_metadata_vendor']
+        target_label: vendor
+      - source_labels: ['__meta_consul_service_metadata_region']
+        target_label: region
+      - source_labels: ['__meta_consul_service_metadata_group']
+        target_label: group
+      - source_labels: ['__meta_consul_service_metadata_account']
+        target_label: account
+      - source_labels: ['__meta_consul_service_metadata_name']
+        target_label: name
+      - source_labels: ['__meta_consul_service_metadata_iid']
+        target_label: iid
+      - source_labels: ['__meta_consul_service_metadata_exp']
+        target_label: exp
+      - source_labels: ['__meta_consul_service_metadata_instance']
+        target_label: instance
+      - source_labels: [instance]
+        target_label: __address__
+"""
+    if not services_list:
+        return {'code': 20000,'configs': '请选择需要Prometheus从Conusl自动发现的KAFKA组' }
+    if services_list and exporter == '':
+        return {'code': 20000,'configs': '您已经选择了需要Prometheus从Conusl自动发现KAFKA组，\n请输入kafka_Exporter的地址和端口，例如：10.0.0.26:9121' }
+    if region_list and cm_exporter == '':
+        return {'code': 20000,'configs': '您已经选择了需要从云监控采集基础指标(CPU、内存、云资源使用率)的KAFKA组，\n请输入ConsulManager地址和端口，例如：10.0.0.26:1026' }
+
+    if region_list:
+        return {'code': 20000,'configs': exporter_config + configs }
+    else:
+        return {'code': 20000,'configs': configs }
+
+def zookeeper_config(region_list,cm_exporter,services_list,exporter):
+    region_str = '\n      - '.join([i.replace('/zookeeper','') for i in region_list])
+    consul_server = consul_url.split("/")[2]
+    exporter_config = f"""
+  - job_name: 'ConsulManager-ZooKeeper'
+    scrape_interval: 30s
+    scrape_timeout: 15s
+    static_configs:
+    - targets:
+      - {region_str}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __metrics_path__
+        regex: (.*)
+        replacement: /api/cloud_zookeeper_metrics/${{1}}
+      - target_label: __address__
+        replacement: {cm_exporter}
+"""
+    configs = f"""
+  - job_name: zookeeper_exporter
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: /scrape
+    consul_sd_configs:
+      - server: '{consul_server}'
+        token: '{consul_token}'
+        refresh_interval: 30s
+        services: {services_list}
+    relabel_configs:
+      - source_labels: [__meta_consul_tags]
+        regex: .*OFF.*
+        action: drop
+      - source_labels: ['__meta_consul_service']
+        target_label: cservice
+      - source_labels: ['__meta_consul_service_metadata_vendor']
+        target_label: vendor
+      - source_labels: ['__meta_consul_service_metadata_region']
+        target_label: region
+      - source_labels: ['__meta_consul_service_metadata_group']
+        target_label: group
+      - source_labels: ['__meta_consul_service_metadata_account']
+        target_label: account
+      - source_labels: ['__meta_consul_service_metadata_name']
+        target_label: name
+      - source_labels: ['__meta_consul_service_metadata_iid']
+        target_label: iid
+      - source_labels: ['__meta_consul_service_metadata_exp']
+        target_label: exp
+      - source_labels: ['__meta_consul_service_metadata_instance']
+        target_label: instance
+      - source_labels: [instance]
+        target_label: __address__
+"""
+    if not services_list:
+        return {'code': 20000,'configs': '请选择需要Prometheus从Conusl自动发现的ZooKeeper组' }
+    if services_list and exporter == '':
+        return {'code': 20000,'configs': '您已经选择了需要Prometheus从Conusl自动发现ZooKeeper组，\n请输入zookeeper_Exporter的地址和端口，例如：10.0.0.26:9121' }
+    if region_list and cm_exporter == '':
+        return {'code': 20000,'configs': '您已经选择了需要从云监控采集基础指标(CPU、内存、云资源使用率)的ZooKeeper组，\n请输入ConsulManager地址和端口，例如：10.0.0.26:1026' }
+
+    if region_list:
+        return {'code': 20000,'configs': exporter_config + configs }
+    else:
+        return {'code': 20000,'configs': configs }
+    
+def mongodb_config(region_list,cm_exporter,services_list,exporter):
+    region_str = '\n      - '.join([i.replace('/mongodb','') for i in region_list])
+    consul_server = consul_url.split("/")[2]
+    exporter_config = f"""
+  - job_name: 'ConsulManager-MongoDb'
+    scrape_interval: 30s
+    scrape_timeout: 15s
+    static_configs:
+    - targets:
+      - {region_str}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __metrics_path__
+        regex: (.*)
+        replacement: /api/cloud_mongodb_metrics/${{1}}
+      - target_label: __address__
+        replacement: {cm_exporter}
+"""
+    configs = f"""
+  - job_name: mongodb_exporter
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: /scrape
+    consul_sd_configs:
+      - server: '{consul_server}'
+        token: '{consul_token}'
+        refresh_interval: 30s
+        services: {services_list}
+    relabel_configs:
+      - source_labels: [__meta_consul_tags]
+        regex: .*OFF.*
+        action: drop
+      - source_labels: ['__meta_consul_service']
+        target_label: cservice
+      - source_labels: ['__meta_consul_service_metadata_vendor']
+        target_label: vendor
+      - source_labels: ['__meta_consul_service_metadata_region']
+        target_label: region
+      - source_labels: ['__meta_consul_service_metadata_group']
+        target_label: group
+      - source_labels: ['__meta_consul_service_metadata_account']
+        target_label: account
+      - source_labels: ['__meta_consul_service_metadata_name']
+        target_label: name
+      - source_labels: ['__meta_consul_service_metadata_iid']
+        target_label: iid
+      - source_labels: ['__meta_consul_service_metadata_exp']
+        target_label: exp
+      - source_labels: ['__meta_consul_service_metadata_instance']
+        target_label: instance
+      - source_labels: [instance]
+        target_label: __address__
+"""
+    if not services_list:
+        return {'code': 20000,'configs': '请选择需要Prometheus从Conusl自动发现的MongoDb组' }
+    if services_list and exporter == '':
+        return {'code': 20000,'configs': '您已经选择了需要Prometheus从Conusl自动发现MongoDb组，\n请输入mongodb_Exporter的地址和端口，例如：10.0.0.26:9121' }
+    if region_list and cm_exporter == '':
+        return {'code': 20000,'configs': '您已经选择了需要从云监控采集基础指标(CPU、内存、云资源使用率)的MongoDb组，\n请输入ConsulManager地址和端口，例如：10.0.0.26:1026' }
+
+    if region_list:
+        return {'code': 20000,'configs': exporter_config + configs }
+    else:
+        return {'code': 20000,'configs': configs }    
+    
+def rabbitmq_config(region_list,cm_exporter,services_list,exporter):
+    region_str = '\n      - '.join([i.replace('/rabbitmq','') for i in region_list])
+    consul_server = consul_url.split("/")[2]
+    exporter_config = f"""
+  - job_name: 'ConsulManager-RabbitMQ'
+    scrape_interval: 30s
+    scrape_timeout: 15s
+    static_configs:
+    - targets:
+      - {region_str}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __metrics_path__
+        regex: (.*)
+        replacement: /api/cloud_rabbitmq_metrics/${{1}}
+      - target_label: __address__
+        replacement: {cm_exporter}
+"""
+    configs = f"""
+  - job_name: rabbitmq_exporter
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: /scrape
+    consul_sd_configs:
+      - server: '{consul_server}'
+        token: '{consul_token}'
+        refresh_interval: 30s
+        services: {services_list}
+    relabel_configs:
+      - source_labels: [__meta_consul_tags]
+        regex: .*OFF.*
+        action: drop
+      - source_labels: ['__meta_consul_service']
+        target_label: cservice
+      - source_labels: ['__meta_consul_service_metadata_vendor']
+        target_label: vendor
+      - source_labels: ['__meta_consul_service_metadata_region']
+        target_label: region
+      - source_labels: ['__meta_consul_service_metadata_group']
+        target_label: group
+      - source_labels: ['__meta_consul_service_metadata_account']
+        target_label: account
+      - source_labels: ['__meta_consul_service_metadata_name']
+        target_label: name
+      - source_labels: ['__meta_consul_service_metadata_iid']
+        target_label: iid
+      - source_labels: ['__meta_consul_service_metadata_exp']
+        target_label: exp
+      - source_labels: ['__meta_consul_service_metadata_instance']
+        target_label: instance
+      - source_labels: [instance]
+        target_label: __address__
+"""
+    if not services_list:
+        return {'code': 20000,'configs': '请选择需要Prometheus从Conusl自动发现的RabbitMQ组' }
+    if services_list and exporter == '':
+        return {'code': 20000,'configs': '您已经选择了需要Prometheus从Conusl自动发现RabbitMQ组，\n请输入rabbitmq_Exporter的地址和端口，例如：10.0.0.26:9121' }
+    if region_list and cm_exporter == '':
+        return {'code': 20000,'configs': '您已经选择了需要从云监控采集基础指标(CPU、内存、云资源使用率)的RabbitMQ组，\n请输入ConsulManager地址和端口，例如：10.0.0.26:1026' }
+
+    if region_list:
+        return {'code': 20000,'configs': exporter_config + configs }
+    else:
+        return {'code': 20000,'configs': configs }    
+
+def nginx_config(region_list,cm_exporter,services_list,exporter):
+    region_str = '\n      - '.join([i.replace('/nginx','') for i in region_list])
+    consul_server = consul_url.split("/")[2]
+    exporter_config = f"""
+  - job_name: 'ConsulManager-NGINX'
+    scrape_interval: 30s
+    scrape_timeout: 15s
+    static_configs:
+    - targets:
+      - {region_str}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __metrics_path__
+        regex: (.*)
+        replacement: /api/cloud_nginx_metrics/${{1}}
+      - target_label: __address__
+        replacement: {cm_exporter}
+"""
+    configs = f"""
+  - job_name: nginx_exporter
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: /scrape
+    consul_sd_configs:
+      - server: '{consul_server}'
+        token: '{consul_token}'
+        refresh_interval: 30s
+        services: {services_list}
+    relabel_configs:
+      - source_labels: [__meta_consul_tags]
+        regex: .*OFF.*
+        action: drop
+      - source_labels: ['__meta_consul_service']
+        target_label: cservice
+      - source_labels: ['__meta_consul_service_metadata_vendor']
+        target_label: vendor
+      - source_labels: ['__meta_consul_service_metadata_region']
+        target_label: region
+      - source_labels: ['__meta_consul_service_metadata_group']
+        target_label: group
+      - source_labels: ['__meta_consul_service_metadata_account']
+        target_label: account
+      - source_labels: ['__meta_consul_service_metadata_name']
+        target_label: name
+      - source_labels: ['__meta_consul_service_metadata_iid']
+        target_label: iid
+      - source_labels: ['__meta_consul_service_metadata_exp']
+        target_label: exp
+      - source_labels: ['__meta_consul_service_metadata_instance']
+        target_label: instance
+      - source_labels: [instance]
+        target_label: __address__
+"""
+    if not services_list:
+        return {'code': 20000,'configs': '请选择需要Prometheus从Conusl自动发现的NGINX组' }
+    if services_list and exporter == '':
+        return {'code': 20000,'configs': '您已经选择了需要Prometheus从Conusl自动发现NGINX组，\n请输入nginx_Exporter的地址和端口，例如：10.0.0.26:9121' }
+    if region_list and cm_exporter == '':
+        return {'code': 20000,'configs': '您已经选择了需要从云监控采集基础指标(CPU、内存、云资源使用率)的NGINX组，\n请输入ConsulManager地址和端口，例如：10.0.0.26:1026' }
+
+    if region_list:
+        return {'code': 20000,'configs': exporter_config + configs }
+    else:
+        return {'code': 20000,'configs': configs }
+def varnish_config(region_list,cm_exporter,services_list,exporter):
+    region_str = '\n      - '.join([i.replace('/varnish','') for i in region_list])
+    consul_server = consul_url.split("/")[2]
+    exporter_config = f"""
+  - job_name: 'ConsulManager-Varnish'
+    scrape_interval: 30s
+    scrape_timeout: 15s
+    static_configs:
+    - targets:
+      - {region_str}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __metrics_path__
+        regex: (.*)
+        replacement: /api/cloud_varnish_metrics/${{1}}
+      - target_label: __address__
+        replacement: {cm_exporter}
+"""
+    configs = f"""
+  - job_name: varnish_exporter
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: /scrape
+    consul_sd_configs:
+      - server: '{consul_server}'
+        token: '{consul_token}'
+        refresh_interval: 30s
+        services: {services_list}
+    relabel_configs:
+      - source_labels: [__meta_consul_tags]
+        regex: .*OFF.*
+        action: drop
+      - source_labels: ['__meta_consul_service']
+        target_label: cservice
+      - source_labels: ['__meta_consul_service_metadata_vendor']
+        target_label: vendor
+      - source_labels: ['__meta_consul_service_metadata_region']
+        target_label: region
+      - source_labels: ['__meta_consul_service_metadata_group']
+        target_label: group
+      - source_labels: ['__meta_consul_service_metadata_account']
+        target_label: account
+      - source_labels: ['__meta_consul_service_metadata_name']
+        target_label: name
+      - source_labels: ['__meta_consul_service_metadata_iid']
+        target_label: iid
+      - source_labels: ['__meta_consul_service_metadata_exp']
+        target_label: exp
+      - source_labels: ['__meta_consul_service_metadata_instance']
+        target_label: instance
+      - source_labels: [instance]
+        target_label: __address__
+"""
+    if not services_list:
+        return {'code': 20000,'configs': '请选择需要Prometheus从Conusl自动发现的Varnish组' }
+    if services_list and exporter == '':
+        return {'code': 20000,'configs': '您已经选择了需要Prometheus从Conusl自动发现Varnish组，\n请输入varnish_Exporter的地址和端口，例如：10.0.0.26:9121' }
+    if region_list and cm_exporter == '':
+        return {'code': 20000,'configs': '您已经选择了需要从云监控采集基础指标(CPU、内存、云资源使用率)的Varnish组，\n请输入ConsulManager地址和端口，例如：10.0.0.26:1026' }
+
+    if region_list:
+        return {'code': 20000,'configs': exporter_config + configs }
+    else:
+        return {'code': 20000,'configs': configs }
+    
+def elasticsearch_config(region_list,cm_exporter,services_list,exporter):
+    region_str = '\n      - '.join([i.replace('/elasticsearch','') for i in region_list])
+    consul_server = consul_url.split("/")[2]
+    exporter_config = f"""
+  - job_name: 'ConsulManager-ES'
+    scrape_interval: 30s
+    scrape_timeout: 15s
+    static_configs:
+    - targets:
+      - {region_str}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __metrics_path__
+        regex: (.*)
+        replacement: /api/cloud_elasticsearch_metrics/${{1}}
+      - target_label: __address__
+        replacement: {cm_exporter}
+"""
+    configs = f"""
+  - job_name: elasticsearch_exporter
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: /scrape
+    consul_sd_configs:
+      - server: '{consul_server}'
+        token: '{consul_token}'
+        refresh_interval: 30s
+        services: {services_list}
+    relabel_configs:
+      - source_labels: [__meta_consul_tags]
+        regex: .*OFF.*
+        action: drop
+      - source_labels: ['__meta_consul_service']
+        target_label: cservice
+      - source_labels: ['__meta_consul_service_metadata_vendor']
+        target_label: vendor
+      - source_labels: ['__meta_consul_service_metadata_region']
+        target_label: region
+      - source_labels: ['__meta_consul_service_metadata_group']
+        target_label: group
+      - source_labels: ['__meta_consul_service_metadata_account']
+        target_label: account
+      - source_labels: ['__meta_consul_service_metadata_name']
+        target_label: name
+      - source_labels: ['__meta_consul_service_metadata_iid']
+        target_label: iid
+      - source_labels: ['__meta_consul_service_metadata_exp']
+        target_label: exp
+      - source_labels: ['__meta_consul_service_metadata_instance']
+        target_label: instance
+      - source_labels: [instance]
+        target_label: __address__
+"""
+    if not services_list:
+        return {'code': 20000,'configs': '请选择需要Prometheus从Conusl自动发现的ES组' }
+    if services_list and exporter == '':
+        return {'code': 20000,'configs': '您已经选择了需要Prometheus从Conusl自动发现ES组，\n请输入elasticsearch_Exporter的地址和端口，例如：10.0.0.26:9121' }
+    if region_list and cm_exporter == '':
+        return {'code': 20000,'configs': '您已经选择了需要从云监控采集基础指标(CPU、内存、云资源使用率)的ES组，\n请输入ConsulManager地址和端口，例如：10.0.0.26:1026' }
+
+    if region_list:
+        return {'code': 20000,'configs': exporter_config + configs }
+    else:
+        return {'code': 20000,'configs': configs }    
+
+def flink_config(region_list,cm_exporter,services_list,exporter):
+    region_str = '\n      - '.join([i.replace('/flink','') for i in region_list])
+    consul_server = consul_url.split("/")[2]
+    exporter_config = f"""
+  - job_name: 'ConsulManager-Flink'
+    scrape_interval: 30s
+    scrape_timeout: 15s
+    static_configs:
+    - targets:
+      - {region_str}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __metrics_path__
+        regex: (.*)
+        replacement: /api/cloud_flink_metrics/${{1}}
+      - target_label: __address__
+        replacement: {cm_exporter}
+"""
+    configs = f"""
+  - job_name: flink_exporter
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: /scrape
+    consul_sd_configs:
+      - server: '{consul_server}'
+        token: '{consul_token}'
+        refresh_interval: 30s
+        services: {services_list}
+    relabel_configs:
+      - source_labels: [__meta_consul_tags]
+        regex: .*OFF.*
+        action: drop
+      - source_labels: ['__meta_consul_service']
+        target_label: cservice
+      - source_labels: ['__meta_consul_service_metadata_vendor']
+        target_label: vendor
+      - source_labels: ['__meta_consul_service_metadata_region']
+        target_label: region
+      - source_labels: ['__meta_consul_service_metadata_group']
+        target_label: group
+      - source_labels: ['__meta_consul_service_metadata_account']
+        target_label: account
+      - source_labels: ['__meta_consul_service_metadata_name']
+        target_label: name
+      - source_labels: ['__meta_consul_service_metadata_iid']
+        target_label: iid
+      - source_labels: ['__meta_consul_service_metadata_exp']
+        target_label: exp
+      - source_labels: ['__meta_consul_service_metadata_instance']
+        target_label: instance
+      - source_labels: [instance]
+        target_label: __address__
+"""
+    if not services_list:
+        return {'code': 20000,'configs': '请选择需要Prometheus从Conusl自动发现的Flink组' }
+    if services_list and exporter == '':
+        return {'code': 20000,'configs': '您已经选择了需要Prometheus从Conusl自动发现Flink组，\n请输入flink_Exporter的地址和端口，例如：10.0.0.26:9121' }
+    if region_list and cm_exporter == '':
+        return {'code': 20000,'configs': '您已经选择了需要从云监控采集基础指标(CPU、内存、云资源使用率)的Flink组，\n请输入ConsulManager地址和端口，例如：10.0.0.26:1026' }
+
+    if region_list:
+        return {'code': 20000,'configs': exporter_config + configs }
+    else:
+        return {'code': 20000,'configs': configs }
+    
+def memcached_config(region_list,cm_exporter,services_list,exporter):
+    region_str = '\n      - '.join([i.replace('/memcached','') for i in region_list])
+    consul_server = consul_url.split("/")[2]
+    exporter_config = f"""
+  - job_name: 'ConsulManager-MemCached'
+    scrape_interval: 30s
+    scrape_timeout: 15s
+    static_configs:
+    - targets:
+      - {region_str}
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __metrics_path__
+        regex: (.*)
+        replacement: /api/cloud_memcached_metrics/${{1}}
+      - target_label: __address__
+        replacement: {cm_exporter}
+"""
+    configs = f"""
+  - job_name: memcached_exporter
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    metrics_path: /scrape
+    consul_sd_configs:
+      - server: '{consul_server}'
+        token: '{consul_token}'
+        refresh_interval: 30s
+        services: {services_list}
+    relabel_configs:
+      - source_labels: [__meta_consul_tags]
+        regex: .*OFF.*
+        action: drop
+      - source_labels: ['__meta_consul_service']
+        target_label: cservice
+      - source_labels: ['__meta_consul_service_metadata_vendor']
+        target_label: vendor
+      - source_labels: ['__meta_consul_service_metadata_region']
+        target_label: region
+      - source_labels: ['__meta_consul_service_metadata_group']
+        target_label: group
+      - source_labels: ['__meta_consul_service_metadata_account']
+        target_label: account
+      - source_labels: ['__meta_consul_service_metadata_name']
+        target_label: name
+      - source_labels: ['__meta_consul_service_metadata_iid']
+        target_label: iid
+      - source_labels: ['__meta_consul_service_metadata_exp']
+        target_label: exp
+      - source_labels: ['__meta_consul_service_metadata_instance']
+        target_label: instance
+      - source_labels: [instance]
+        target_label: __address__
+"""
+    if not services_list:
+        return {'code': 20000,'configs': '请选择需要Prometheus从Conusl自动发现的MemCached组' }
+    if services_list and exporter == '':
+        return {'code': 20000,'configs': '您已经选择了需要Prometheus从Conusl自动发现MemCached组，\n请输入memcached_Exporter的地址和端口，例如：10.0.0.26:9121' }
+    if region_list and cm_exporter == '':
+        return {'code': 20000,'configs': '您已经选择了需要从云监控采集基础指标(CPU、内存、云资源使用率)的MemCached组，\n请输入ConsulManager地址和端口，例如：10.0.0.26:1026' }
+
+    if region_list:
+        return {'code': 20000,'configs': exporter_config + configs }
+    else:
+        return {'code': 20000,'configs': configs }    

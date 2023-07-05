@@ -64,6 +64,150 @@ def importconsul(row,imptype):
                          'name':name,'instance':instance,'os':os},
                 "check": {"tcp": instance,"interval": "60s"}
             }
+        elif imptype == 'selfkafka':
+            vendor,account,region,group,name,instance,os = row
+            logger.info(row)
+            sid = f"{vendor}/{account}/{region}/{group}@{name}@kafka"
+            ip = instance.split(':')[0]
+            port = instance.split(':')[1]
+            data = {
+                "id": sid,
+                "name": 'selfkafka_exporter',
+                'Address': ip,
+                'port': int(port),
+                "tags": [vendor,os],
+                "Meta": {'vendor':vendor,'account':account,'region':region,'group':group,
+                         'name':name,'instance':instance,'os':os},
+                "check": {"tcp": instance,"interval": "60s"}
+            } 
+        elif imptype == 'selfmongodb':
+            vendor,account,region,group,name,instance,os = row
+            logger.info(row)
+            sid = f"{vendor}/{account}/{region}/{group}@{name}@mongodb"
+            ip = instance.split(':')[0]
+            port = instance.split(':')[1]
+            data = {
+                "id": sid,
+                "name": 'selfmongodb_exporter',
+                'Address': ip,
+                'port': int(port),
+                "tags": [vendor,os],
+                "Meta": {'vendor':vendor,'account':account,'region':region,'group':group,
+                         'name':name,'instance':instance,'os':os},
+                "check": {"tcp": instance,"interval": "60s"}
+            }   
+        elif imptype == 'selfzookeeper':
+            vendor,account,region,group,name,instance,os = row
+            logger.info(row)
+            sid = f"{vendor}/{account}/{region}/{group}@{name}@zookeeper"
+            ip = instance.split(':')[0]
+            port = instance.split(':')[1]
+            data = {
+                "id": sid,
+                "name": 'selfzookeeper_exporter',
+                'Address': ip,
+                'port': int(port),
+                "tags": [vendor,os],
+                "Meta": {'vendor':vendor,'account':account,'region':region,'group':group,
+                         'name':name,'instance':instance,'os':os},
+                "check": {"tcp": instance,"interval": "60s"}
+            }      
+        elif imptype == 'selfrabbitmq':
+            vendor,account,region,group,name,instance,os = row
+            logger.info(row)
+            sid = f"{vendor}/{account}/{region}/{group}@{name}@rabbitmq"
+            ip = instance.split(':')[0]
+            port = instance.split(':')[1]
+            data = {
+                "id": sid,
+                "name": 'selfrabbitmq_exporter',
+                'Address': ip,
+                'port': int(port),
+                "tags": [vendor,os],
+                "Meta": {'vendor':vendor,'account':account,'region':region,'group':group,
+                         'name':name,'instance':instance,'os':os},
+                "check": {"tcp": instance,"interval": "60s"}
+            }   
+        elif imptype == 'selfelasticsearch':
+            vendor,account,region,group,name,instance,os = row
+            logger.info(row)
+            sid = f"{vendor}/{account}/{region}/{group}@{name}@elasticsearch"
+            ip = instance.split(':')[0]
+            port = instance.split(':')[1]
+            data = {
+                "id": sid,
+                "name": 'selfelasticsearch_exporter',
+                'Address': ip,
+                'port': int(port),
+                "tags": [vendor,os],
+                "Meta": {'vendor':vendor,'account':account,'region':region,'group':group,
+                         'name':name,'instance':instance,'os':os},
+                "check": {"tcp": instance,"interval": "60s"}
+            }  
+        elif imptype == 'selfvarnish':
+            vendor,account,region,group,name,instance,os = row
+            logger.info(row)
+            sid = f"{vendor}/{account}/{region}/{group}@{name}@varnish"
+            ip = instance.split(':')[0]
+            port = instance.split(':')[1]
+            data = {
+                "id": sid,
+                "name": 'selfvarnish_exporter',
+                'Address': ip,
+                'port': int(port),
+                "tags": [vendor,os],
+                "Meta": {'vendor':vendor,'account':account,'region':region,'group':group,
+                         'name':name,'instance':instance,'os':os},
+                "check": {"tcp": instance,"interval": "60s"}
+            }     
+        elif imptype == 'selfnginx':
+            vendor,account,region,group,name,instance,os = row
+            logger.info(row)
+            sid = f"{vendor}/{account}/{region}/{group}@{name}@nginx"
+            ip = instance.split(':')[0]
+            port = instance.split(':')[1]
+            data = {
+                "id": sid,
+                "name": 'selfnginx_exporter',
+                'Address': ip,
+                'port': int(port),
+                "tags": [vendor,os],
+                "Meta": {'vendor':vendor,'account':account,'region':region,'group':group,
+                         'name':name,'instance':instance,'os':os},
+                "check": {"tcp": instance,"interval": "60s"}
+            }  
+        elif imptype == 'selfmemcached':
+            vendor,account,region,group,name,instance,os = row
+            logger.info(row)
+            sid = f"{vendor}/{account}/{region}/{group}@{name}@memcached"
+            ip = instance.split(':')[0]
+            port = instance.split(':')[1]
+            data = {
+                "id": sid,
+                "name": 'selfmemcached_exporter',
+                'Address': ip,
+                'port': int(port),
+                "tags": [vendor,os],
+                "Meta": {'vendor':vendor,'account':account,'region':region,'group':group,
+                         'name':name,'instance':instance,'os':os},
+                "check": {"tcp": instance,"interval": "60s"}
+            } 
+        elif imptype == 'selfflink':
+            vendor,account,region,group,name,instance,os = row
+            logger.info(row)
+            sid = f"{vendor}/{account}/{region}/{group}@{name}@flink"
+            ip = instance.split(':')[0]
+            port = instance.split(':')[1]
+            data = {
+                "id": sid,
+                "name": 'selfflink_exporter',
+                'Address': ip,
+                'port': int(port),
+                "tags": [vendor,os],
+                "Meta": {'vendor':vendor,'account':account,'region':region,'group':group,
+                         'name':name,'instance':instance,'os':os},
+                "check": {"tcp": instance,"interval": "60s"}
+            }                                                                     
     except Exception as e:
         logger.error(f"【import】导入失败,{e}\n{traceback.format_exc()}")
         return {"code": 50000, "data": f"导入内容格式异常！{row}"} 

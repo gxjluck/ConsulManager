@@ -39,12 +39,12 @@ module.exports = {
     },
 
     // 非nginx调试，使用代理后端模式。
-    // proxy:{
-      // 'api':{
-        // target:'http://192.168.1.120:2026',
-        // changeOrigin: true,
-      // }
-    // },
+    proxy:{
+      'api':{
+        target:'http://127.0.0.1:2026',
+        changeOrigin: false,
+      }
+    },
 
     before: require('./mock/mock-server.js')
   },
