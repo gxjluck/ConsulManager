@@ -22,11 +22,19 @@
         <el-form-item label="JumpServer URL">
           <el-input v-model="jms_config.url" placeholder="http开头" style="width: 390px;" />
         </el-form-item>
+        <el-form-item label="JumpServer 版本">
+          <el-select v-model="jms_config.ver" placeholder="版本" style="width: 100px" class="filter-item">
+            <el-option key="V2" label="V2" value="V2" />
+            <el-option key="V3" label="V3" value="V3" />
+          </el-select>
+          <span v-if="jms_config.ver === 'V3'"><font size="3px" color="#ff0000">请更新JumpServer到3.5及以上版本</font></span>
+        </el-form-item>
         <el-form-item label="JumpServer Token">
           <el-input v-model="jms_config.token" type="password" placeholder="请输入Admin Token" style="width: 390px;" />
         </el-form-item>
         <hr style="FILTER: alpha(opacity=100,finishopacity=0,style=2)" align=left width="96%" SIZE=1>
         <h3>全局通用主机【管理用户】信息：</h3>
+        <span v-if="jms_config.ver === 'V3'"><font size="3px" color="#ff0000">JumpServer3.x请使用账号模板的ID：登录JumpServer-账号管理-账号模板-选择账号-基本信息-ID</font></span>
         <div class="demo-input-suffix">
           <h4>Linux：</h4>
           ssh端口：<el-input v-model="jms_config.linuxport" style="width: 72px;" />
@@ -107,7 +115,7 @@ import { getJmsList, getJmsConfig, postJmsConfig, postJmsSwitch, postJmsSync } f
 export default {
   data() {
     return {
-      jms_config: { url: '', token: '', linuxport: '22', linuxuid: '', winport: '3389', winuid: '', custom_ecs_info: '' },
+      jms_config: { ver: 'V2', url: '', token: '', linuxport: '22', linuxuid: '', winport: '3389', winuid: '', custom_ecs_info: '' },
       listLoading: false,
       dialogFormVisible: false,
       query: { vendor: '', account: '' },

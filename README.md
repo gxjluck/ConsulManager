@@ -10,8 +10,7 @@
 [![OSCS Status](https://www.oscs1024.com/platform/badge/starsliao/ConsulManager.svg?size=small)](https://www.murphysec.com/dr/Zoyt5g0huRavAtItj2)
 </div>
 
-**注意:（暂时最高支持Consul v1.14.x，请勿使用Consul v1.15.x）（[docs/Consul部署说明.md](https://github.com/starsliao/ConsulManager/blob/main/docs/Consul%E9%83%A8%E7%BD%B2%E8%AF%B4%E6%98%8E.md)）**
-
+![tensuns-arch](https://github.com/starsliao/ConsulManager/blob/main/tensuns-arch.png)
 
 ## 🏷目录
 * [🚀概述](#概述)
@@ -23,7 +22,7 @@
 * [💖特别鸣谢](#特别鸣谢)
 
 ## 🦄概述
->**ConsulManager**是一个使用Flask+Vue开发，基于Consul的WEB运维平台，弥补了Consul官方UI对Services管理的不足；并且基于Consul的服务发现与键值存储：实现了各云厂商多种资源与Prometheus的无缝同步，以及对各类监控资源的优雅管理与展示。
+>**ConsulManager**是一个使用Flask+Vue开发，基于Consul的WEB运维平台，弥补了Consul官方UI对Services管理的不足；并且基于Consul的服务发现与键值存储：实现了Prometheus自动发现多云厂商各资源信息；基于Blackbox对站点监控的可视化维护；以及对自建与云上资源的优雅管理与展示。
 
 ## 🌈功能描述
 ### 🎡1. Consul管理(比官方更优雅的Consul Web UI)
@@ -31,18 +30,18 @@
 - 直观的查看每个Services实例的信息，及整体Services的健康状态。
 - 可以便捷的对Services实例的Tags、Meta、健康检查配置管理与查询。
 
-### 💎2. 云上与自建资源监控管理
+### 💎2. 自建与云资源监控管理(ECS/RDS/Redis)
 >**基于Consul实现Prometheus监控目标的自动发现。**
 
 - ✔**当前已支持对接阿里云、腾讯云、华为云。**
 
-  - ⭐支持多云ECS/MySQL/Redis的**资源、分组、标签**自动同步到Consul并接入到Prometheus自动发现！(并提供云资源信息查询与自定义页面)
+  - ⭐支持多云ECS/RDS/Redis的**资源、分组、标签**自动同步到Consul并接入到Prometheus自动发现！(并提供云资源信息查询与自定义页面)
   - ⭐支持多云ECS信息自动同步到**JumpServer**。
-  - ⭐支持作为Exporter：Prometheus增加ConsulManager的JOB后可抓取云厂商的部分MySQL/Redis指标。(弥补原生Exporter无法获取部分云MySQL/Redis指标的问题)
-  - 支持多云**账户余额**与云资源**到期日**设置阈值告警通知。
-- 支持自建主机/MySQL/Redis接入WEB管理，支持增删改查、批量导入导出，自动同步到Consul并接入到Prometheus监控！
-- 提供了按需生成Prometheus配置与ECS/MySQL/Redis告警规则的功能。
-- 设计了多个支持同步的各字段展示的Node_Exporter、Mysqld_Exporter、Redis_Exporter Grafana看板。
+  - ⭐支持多云**账户余额**与云资源**到期日**设置阈值告警通知。
+  - ⭐支持作为Exporter接入Prometheus：Prometheus增加ConsulManager的JOB后可抓取云厂商的部分MySQL/Redis指标。(弥补原生Exporter无法获取部分云MySQL/Redis指标的问题)
+- ✔**支持自建主机/MySQL/Redis**接入WEB管理，支持增删改查、批量导入导出，自动同步到Consul并接入到Prometheus监控！
+- ✔提供了按需生成Prometheus配置与ECS/MySQL/Redis告警规则的功能。
+- ✔设计了多个支持同步的各字段展示的Node_Exporter、Mysqld_Exporter、Redis_Exporter Grafana看板。
 
 ### 🚀3. 站点与接口监控管理
 >**基于Consul + Prometheus + Blackbox_Exporter实现站点的自动发现与监控。**
@@ -61,17 +60,19 @@
 ---
 
 ## 💾部署说明
-##### 1. ConsulManager需要依赖`Consul`，请先完成Consul的部署。（暂时最高支持Consul v1.14.5）（[docs/Consul部署说明.md](https://github.com/starsliao/ConsulManager/blob/main/docs/Consul%E9%83%A8%E7%BD%B2%E8%AF%B4%E6%98%8E.md)）
+### 💥install目录下新增docker和k8s的一键部署脚本💥
+
+#### 原部署说明:
+##### 1. ConsulManager需要依赖`Consul`，请先完成Consul的部署。（[docs/Consul部署说明.md](https://github.com/starsliao/ConsulManager/blob/main/docs/Consul%E9%83%A8%E7%BD%B2%E8%AF%B4%E6%98%8E.md)）
 ##### 2. 使用`docker-compose`来部署ConsulManager
 - 下载：`wget https://starsl.cn/static/img/docker-compose.yml`（仓库根目录下`docker-compose.yml`）
 - 编辑：`docker-compose.yml`，修改3个环境变量：
-  - **`consul_token`**：consul的登录token（[如何获取？](https://github.com/starsliao/ConsulManager/blob/main/docs/Consul%E9%83%A8%E7%BD%B2%E8%AF%B4%E6%98%8E.md#%E8%8E%B7%E5%8F%96%E7%99%BB%E5%BD%95token%E8%AE%B0%E5%BD%95secretid%E5%8D%B3%E4%B8%BAconsul%E7%99%BB%E5%BD%95%E7%9A%84token)）
+  - **`consul_token`**：consul的登录token（安装consul时生成的UUID）
   - **`consul_url`**：consul的URL(http开头，/v1要保留)
   - **`admin_passwd`**：登录ConsulManager Web的admin密码
 - 启动：`docker-compose pull && docker-compose up -d`
 - 访问：`http://{IP}:1026`，使用配置的变量 **`admin_passwd`** 登录
 - **安装使用中遇到问题，请参考：[FAQ](https://github.com/starsliao/ConsulManager/blob/main/docs/FAQ.md)**
-
 
 ##### 3. 你也可以使用K8S来部署ConsulManager
 ```
@@ -142,13 +143,8 @@ kubectl apply -n 命名空间 -f k8s-deploy.yaml
 
 ---
 
-### 🎃提交bug
-@会飞的鱼  [@奈](https://github.com/Wp516781950)  @Swancavalier  [@Show_Lo](https://github.com/ShowXian)  @郑不错  @init  @weibw  @Martin
-
----
-
-### 📢提供建议
-[@dong9205](https://github.com/dong9205)  [@dissipator](https://github.com/dissipator) @烂泥
+### 🎃提交bug与建议
+@会飞的鱼  [@奈](https://github.com/Wp516781950)  @Swancavalier  [@Show_Lo](https://github.com/ShowXian)  @郑不错  @init  @weibw  @Martin @MiracleWong [@dong9205](https://github.com/dong9205)  [@dissipator](https://github.com/dissipator) @烂泥
 
 ---
 
@@ -157,4 +153,4 @@ kubectl apply -n 命名空间 -f k8s-deploy.yaml
 
 ---
 
-# 💖感谢伟大的[Flask](https://github.com/pallets/flask)、[VUE](https://github.com/vuejs/vue)、[vue-admin-template](https://github.com/PanJiaChen/vue-admin-template)
+## 💖感谢伟大的[Flask](https://github.com/pallets/flask)、[VUE](https://github.com/vuejs/vue)、[vue-admin-template](https://github.com/PanJiaChen/vue-admin-template)
