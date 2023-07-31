@@ -6,12 +6,14 @@
 [![GitHub Stargazers](https://img.shields.io/github/stars/starsliao/ConsulManager?color=ff69b4)](https://github.com/starsliao/ConsulManager/stargazers)
 [![Python](https://img.shields.io/badge/python-%3C=v3.10-3776ab)](https://nodejs.org)
 [![Node.js](https://img.shields.io/badge/node.js-%3E=v14-229954)](https://nodejs.org)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blueviolet)](https://github.com/starsliao/ConsulManager/blob/main/LICENSE)
+[![GitHub license](https://img.shields.io/badge/license-WTFPL-blueviolet)](https://github.com/starsliao/ConsulManager/blob/main/LICENSE)
 [![OSCS Status](https://www.oscs1024.com/platform/badge/starsliao/ConsulManager.svg?size=small)](https://www.murphysec.com/dr/Zoyt5g0huRavAtItj2)
 </div>
 
-![tensuns-arch](https://github.com/starsliao/ConsulManager/blob/main/tensuns-arch.png)
+![tensuns-arch](https://raw.githubusercontent.com/starsliao/TenSunS/main/screenshot/tensuns-arch.png)
 
+- **v1.0.0开始支持自定义登录页，登录后你可以在`系统设置`中自定义登录页：[欢迎Show出你的登录页](https://github.com/starsliao/TenSunS/issues/75)。**
+- **如果你觉得本项目还不错，[烦请在这里留下脚印](https://github.com/starsliao/TenSunS/issues/74)，简单登记下，也可以分享您的使用经验与实践，感谢支持！**
 ## 🏷目录
 * [🚀概述](#概述)
 * [🌈功能描述](#功能描述)
@@ -22,7 +24,7 @@
 * [💖特别鸣谢](#特别鸣谢)
 
 ## 🦄概述
->**ConsulManager**是一个使用Flask+Vue开发，基于Consul的WEB运维平台，弥补了Consul官方UI对Services管理的不足；并且基于Consul的服务发现与键值存储：实现了Prometheus自动发现多云厂商各资源信息；基于Blackbox对站点监控的可视化维护；以及对自建与云上资源的优雅管理与展示。
+>**后羿 - TenSunS**(原ConsulManager)是一个使用Flask+Vue开发，基于Consul的WEB运维平台，弥补了Consul官方UI对Services管理的不足；并且基于Consul的服务发现与键值存储：实现了Prometheus自动发现多云厂商各资源信息；基于Blackbox对站点监控的可视化维护；以及对自建与云上资源的优雅管理与展示。
 
 ## 🌈功能描述
 ### 🎡1. Consul管理(比官方更优雅的Consul Web UI)
@@ -60,30 +62,28 @@
 ---
 
 ## 💾部署说明
-### 💥install目录下新增docker和k8s的一键部署脚本💥
+#### 💥新增基于docker/K8S的一键部署脚本,Consul独立部署脚本,安装脚本统一放置install目录
+##### 基于docker-compose安装
+- [`install/docker-compose/all_install.sh`](https://github.com/starsliao/TenSunS/blob/main/install/docker-compose/all_install.sh)（**推荐**）:
+  1. **前提**服务器需要先安装好**docker和docker-compose**
+  2. **一键安装**：`curl -s https://starsl.cn/static/img/all_install.sh|sudo bash`
+  3. 运行该脚本后会使用docker-compose启动TenSunS和Consul,安装路径是:/ops/tensuns
+  4. 脚本运行完成后会有使用提示及自动生成登录密码,**打开浏览器立刻登录TenSunS,开始体验吧!**
 
-#### 原部署说明:
-##### 1. ConsulManager需要依赖`Consul`，请先完成Consul的部署。（[docs/Consul部署说明.md](https://github.com/starsliao/ConsulManager/blob/main/docs/Consul%E9%83%A8%E7%BD%B2%E8%AF%B4%E6%98%8E.md)）
-##### 2. 使用`docker-compose`来部署ConsulManager
-- 下载：`wget https://starsl.cn/static/img/docker-compose.yml`（仓库根目录下`docker-compose.yml`）
-- 编辑：`docker-compose.yml`，修改3个环境变量：
-  - **`consul_token`**：consul的登录token（安装consul时生成的UUID）
-  - **`consul_url`**：consul的URL(http开头，/v1要保留)
-  - **`admin_passwd`**：登录ConsulManager Web的admin密码
-- 启动：`docker-compose pull && docker-compose up -d`
-- 访问：`http://{IP}:1026`，使用配置的变量 **`admin_passwd`** 登录
-- **安装使用中遇到问题，请参考：[FAQ](https://github.com/starsliao/ConsulManager/blob/main/docs/FAQ.md)**
-
-##### 3. 你也可以使用K8S来部署ConsulManager
-```
-# 编辑 k8s-deploy.yaml
-1. 修改24、40行的x.x.x.x为Consul的IP。
-2. 修改36行为Web登录admin账号的密码。
-3. 修改38行为Consul的访问token。
-4. 执行以下命令部署：
-kubectl apply -n 命名空间 -f k8s-deploy.yaml
-5. 浏览器访问Service：consulmanager（NodeIP+NodePort）。
-```
+- [`install/docker-compose/consul_install_only.sh`](https://github.com/starsliao/TenSunS/blob/main/install/docker-compose/consul_install_only.sh) 独立的Consul安装脚本
+- [`install/docker-compose/tensuns_install_only.sh`](https://github.com/starsliao/TenSunS/blob/main/install/docker-compose/tensuns_install_only.sh) 独立的TenSunS安装脚本（已经有Consul的用户可以使用这个脚本）
+##### 基于K8S安装
+- [`install/k8s/install.sh`](https://github.com/starsliao/TenSunS/blob/main/install/k8s/install.sh)：
+  1. 运行后需要设置admin用户的密码。
+  2. 脚本执行完成后会生成TenSunS的安装yaml文件和Consul的安装yaml文件。TenSunS是无状态的，有一个初始化容器检查consul连接是否成功，所以建议先安装Consul。Conusl是StatefulSet，需要先配置好存储（volumeClaimTemplates），默认是华为云自动创建存储的配置例子，请自行参考修改。
+  3. 完成安装后即可使用任意K8S节点IP+31026端口访问，调用的service是tensuns。
+##### 注意
+- 所有安装方式Consul的管理token会自动生成，可以在Consul的配置文件或TenSunS的docker-compose中查看。
+- 已经部署Consul的用户可以在TenSunS的docker-compose.yaml或者K8S yaml文件的环境变量部分找到:`consul_token`,`consul_url`,并配置上你的Consul信息;环境变量`admin_passwd`是TenSunS登录admin账号的密码。
+- **安装使用中遇到问题，以及问题排查，请参考：[FAQ](https://github.com/starsliao/ConsulManager/blob/main/docs/FAQ.md)**
+##### 🎉活动
+- **登录后你可以在`系统设置`中来`自定义登录页`：[欢迎Show出你的登录页](https://github.com/starsliao/TenSunS/issues/75)。**
+- **如果你觉得本项目还不错，[烦请在这里留下脚印](https://github.com/starsliao/TenSunS/issues/74)，简单登记下，也可以分享您的使用经验与实践，感谢支持！**
 
 ## 📌[更新记录](https://github.com/starsliao/ConsulManager/releases)
 
@@ -113,7 +113,7 @@ kubectl apply -n 命名空间 -f k8s-deploy.yaml
 
 ---
 ## 🥇最佳实践
-- #### [ConsulManager：实践与FAQ](https://github.com/starsliao/ConsulManager/tree/main/docs)
+- #### [TenSunS：实践与FAQ](https://github.com/starsliao/ConsulManager/tree/main/docs)
 - #### [应用场景1：如何优雅的基于Consul自动同步ECS主机监控](https://github.com/starsliao/ConsulManager/blob/main/docs/ECS%E4%B8%BB%E6%9C%BA%E7%9B%91%E6%8E%A7.md)
 - #### [应用场景2：如何优雅的使用Consul管理Blackbox站点监控](https://github.com/starsliao/ConsulManager/blob/main/docs/blackbox%E7%AB%99%E7%82%B9%E7%9B%91%E6%8E%A7.md)
 - #### [应用场景3：如何把云主机自动同步到JumpServer](https://github.com/starsliao/ConsulManager/blob/main/docs/%E5%A6%82%E4%BD%95%E6%8A%8A%E4%B8%BB%E6%9C%BA%E8%87%AA%E5%8A%A8%E5%90%8C%E6%AD%A5%E5%88%B0JumpServer.md)
@@ -122,7 +122,7 @@ kubectl apply -n 命名空间 -f k8s-deploy.yaml
 
 
 ## 💖特别鸣谢
-### 赞赏与关注公众号【**云原生DevOps**】加入交流群（请备注：consul），获取更多...
+### 赞赏与关注公众号【**云原生DevOps**】加入交流群（请备注：后羿），获取更多...
 
 **如果看不到图片请点击该链接：[https://starsl.cn/static/img/thanks.png](https://starsl.cn/static/img/thanks.png)**
 ![](https://starsl.cn/static/img/thanks.png)
@@ -139,7 +139,7 @@ kubectl apply -n 命名空间 -f k8s-deploy.yaml
 ---
 
 ### ✅提交代码
-[@dbdocker](https://github.com/dbdocker)
+[@dbdocker](https://github.com/dbdocker) [@anatsking](https://github.com/anatsking)
 
 ---
 

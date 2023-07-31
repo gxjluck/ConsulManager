@@ -1,12 +1,15 @@
 <template>
-  <div class="login-container">
-    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
-
-      <div class="title-container" style="text-align:center">
-        <img src="../../assets/login_images/SLH.png" width="90" height="90"><br><br>
-        <h3 style="font-size:35px" class="title">Consul Manager</h3><br>
-      </div>
-
+  <div class="login-container" :style="{ 'background-image': 'url(' + loginbgimg + ')' }">
+    <div v-if="isbig" class="title-container" style="text-align:center">
+      <br><br>
+      <img :src="loginlogo" width="720" :height=height>
+      <br><br>
+    </div>
+    <div v-else class="title-container" style="text-align:center; padding: 160px 70px 0;">
+      <img :src="loginlogo" width="100" height="100"><br><br><br><br>
+      <h3 style="font-size:45px" class="title">{{ logintitle }}</h3><br>
+    </div>
+    <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left" style="padding: 10px 100px 0;">
       <el-form-item prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />
@@ -47,10 +50,17 @@
     <div align="center" class="title-container">
       <span style="font-size:12px" class="title">{{ VER }}</span>
     </div>
+    <div class="footer">
+      <p style="width:100%"><center><el-link href="https://StarsL.cn" :underline="false" target="_blank">Powered by StarsL.cn</el-link></center></p>
+    </div>
   </div>
 </template>
 
 <script>
+import { logo, getbgimg, getitle } from '@/api/login'
+import smallogo from '@/assets/login_images/SLH.png'
+import biglogo from '@/assets/login_images/tensuns.png'
+import bgimg from '@/assets/login_images/bg.png'
 
 export default {
   name: 'Login',
@@ -81,6 +91,11 @@ export default {
       },
       loading: false,
       passwordType: 'password',
+      loginlogo: '',
+      loginbgimg: '',
+      logintitle: 'T e n S u n S',
+      isbig: true,
+      height: '330',
       redirect: undefined
     }
   },
@@ -92,7 +107,50 @@ export default {
       immediate: true
     }
   },
+  created() {
+    this.fetchtitle()
+    this.getlogo()
+    this.getbg()
+  },
   methods: {
+    getlogo() {
+      logo().then(response => {
+        if (response.data === 'default') {
+          if (response.isbig === true) {
+            this.loginlogo = biglogo
+            this.isbig = true
+          } else {
+            this.loginlogo = smallogo
+            this.isbig = false
+          }
+        } else {
+          if (response.data === 'data:image/png;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7') {
+            this.height = response.logoheight
+          }
+          this.loginlogo = response.data
+          this.isbig = response.isbig
+        }
+      })
+    },
+
+    fetchtitle() {
+      getitle().then(response => {
+        if (response.data !== 'default') {
+          this.logintitle = response.data
+        }
+      })
+    },
+
+    getbg() {
+      getbgimg().then(response => {
+        if (response.data === 'default') {
+          this.loginbgimg = bgimg
+        } else {
+          this.loginbgimg = response.data
+        }
+      })
+    },
+
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -186,7 +244,7 @@ $light_gray:#eee;
   // overflow: hidden;
   width: 100%;
   height: 100%;
-  background-image: url("../../assets/login_images/bg.png");
+  //background-image: url("../../assets/login_images/bg.png");
   background-size: cover;
   background-position: center;
   position: relative;
@@ -232,6 +290,14 @@ $light_gray:#eee;
     }
   }
 
+  .footer {
+    p {
+      position:absolute;
+      bottom:0px;
+      padding:0px;
+      margin:0px;
+    }
+  }
   .show-pwd {
     position: absolute;
     right: 10px;

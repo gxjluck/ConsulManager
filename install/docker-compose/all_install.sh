@@ -35,12 +35,12 @@ acl = {
   }
 }
 EOF
-
+chmod 777 -R $tsspath/consul/config
 cat <<EOF > $tsspath/docker-compose.yaml
 version: '3.6'
 services:
   consul:
-    image: hashicorp/consul:1.16
+    image: swr.cn-south-1.myhuaweicloud.com/starsl.cn/consul:latest
     container_name: consul
     hostname: consul
     restart: always
@@ -91,8 +91,8 @@ networks:
       driver: default
 EOF
 
-echo -e "\n后羿运维平台默认的admin密码是：\033[31;1m$adminpwd\033[0m\n修改密码请编辑 $tsspath/docker-compose.yaml 查找并修改变量 admin_passwd 的值\n"
-echo "正在启动后羿运维平台..."
+echo -e "\n\033[31;1m正在启动后羿运维平台...\033[0m"
 cd $tsspath && docker-compose up -d
-echo -e "\n请使用浏览器访问 http://{你的IP}:1026 并登录使用\n"
+echo -e "\n后羿运维平台默认的admin密码是：\033[31;1m$adminpwd\033[0m\n修改密码请编辑 $tsspath/docker-compose.yaml 查找并修改变量 admin_passwd 的值\n"
+echo -e "请使用浏览器访问 http://{你的IP}:1026 并登录使用\n"
 echo -e "\033[31;1mhttp://`ip route get 1.2.3.4 | awk '{print $NF}'|head -1`:1026\033[0m\n"
